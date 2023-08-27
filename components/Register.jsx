@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import supabase from "../supabase/supabase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Register = () => {
   const navigation = useNavigation();
@@ -32,7 +33,13 @@ const Register = () => {
       }
 
       console.log("User Registered in successfully:");
-      navigation.navigate("Homescreen");
+        try {
+           const user = { email, password };
+          await AsyncStorage.setItem("user", JSON.stringify(user));
+        } catch (storageError) {
+          console.error("Error storing user data:", storageError.message);
+        }
+      navigation.navigate("UserDetails");
     } catch (error) {
       console.error("Error Registering in:", error.message);
       return null;

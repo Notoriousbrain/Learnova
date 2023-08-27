@@ -2,9 +2,15 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
 import { Text, TextInput, View, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import supabase from "../supabase/supabase";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../redux/actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 
 const Login = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
@@ -24,13 +30,19 @@ const Login = () => {
         }
         
         console.log("User logged in successfully:");
+        dispatch(loginUser(email));
+        const user = { email, password}
+          try {
+            await AsyncStorage.setItem("user", JSON.stringify(user));
+          } catch (storageError) {
+            console.error("Error storing user data:", storageError.message);
+          }
         navigation.navigate("Homescreen");
      } catch (error) {
        console.error("Error logging in:", error.message);
        return null;
      }
    }
-   
 
     const handleSignIn = async () => {
       if (email === "") {
