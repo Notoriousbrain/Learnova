@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Text, TextInput, View, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import supabase from "../supabase/supabase";
 import { useDispatch } from "react-redux";
@@ -61,6 +61,22 @@ const Login = () => {
           login(email, password);
       }
     };
+
+      useEffect(() => {
+        const fetchEmail = async () => {
+          try {
+            const userString = await AsyncStorage.getItem("user");
+            if (userString) {
+              const user = JSON.parse(userString);
+              setEmail(user.email);
+            }
+          } catch (storageError) {
+            console.error("Error fetching user data:", storageError.message);
+          }
+        };
+
+        fetchEmail();
+      }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
